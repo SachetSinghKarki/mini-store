@@ -13,11 +13,28 @@ datasource db {
 }
 
 model Product {
-  id String @id @default(cuid())
-  name String
+  id          String   @id @default(cuid())
+  name        String
   description String
-  price Int
-  imageUrl String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
+  price       Int
+
+  media       ProductMedia[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProductMedia {
+  id        String @id @default(cuid())
+
+  url       String
+  type      MediaType
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
 }
