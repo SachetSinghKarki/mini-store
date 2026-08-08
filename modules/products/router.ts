@@ -1,6 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "@/trpc/init";
 import { createProductSchema } from "./schemas/create-product";
 import { getFileUrl } from "@/lib/s3";
+import z from "zod";
 
 export const productRouter = createTRPCRouter({
   hello: publicProcedure.query(() => {
@@ -23,6 +24,35 @@ export const productRouter = createTRPCRouter({
     });
 
     return product;
+  }),
+
+  getById: publicProcedure
+  .input(z.object({
+    id: z.string(),
+  }))
+  .query(async ({ ctx, input }) => {
+    const product = await ctx.prisma.product.findUnique({
+      where: {
+        id: input.id,
+      },
+      include: {
+        media: true,
+      },
+    });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    return {
+      ...product,
+      media: await Promise.all(
+        product.media.map(async (media) => ({
+          ...media,
+          url: await getFileUrl(media.key),
+        })),
+      ),
+    };
   }),
 
   list: publicProcedure.query(async ({ ctx }) => {
