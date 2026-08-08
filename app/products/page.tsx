@@ -8,7 +8,7 @@ export default function ProductsPage() {
   const queryClient = getQueryClient()
 
   void queryClient.prefetchQuery(
-    trpc.products.hello.queryOptions()
+    trpc.products.list.queryOptions()
   )
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

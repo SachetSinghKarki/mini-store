@@ -30,11 +30,12 @@ import {
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { uploadFiles } from "../lib/upload";
 
 export function ProductForm() {
   const [files, setFiles] = React.useState<File[]>([]);
   const trpc = useTRPC();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const form = useForm<CreateProductSchema>({
     resolver: zodResolver(createProductSchema),
@@ -42,31 +43,43 @@ export function ProductForm() {
       name: "",
       description: "",
       price: 0,
+      media: [],
     },
   });
 
- const createProduct = useMutation(
-  trpc.products.create.mutationOptions({
-    onSuccess: async () => {
-      await queryClient.invalidateQueries(
-        trpc.products.list.queryFilter()
-      );
+  const createProduct = useMutation(
+    trpc.products.create.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.products.list.queryFilter());
 
-      toast.success("Product created successfully.");
+        toast.success("Product created successfully.");
 
-      form.reset();
-      setFiles([]);
-    },
+        form.reset();
+        setFiles([]);
+      },
 
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  })
-);
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    }),
+  );
 
-async function onSubmit(data: CreateProductSchema) {
-  await createProduct.mutateAsync(data);
-}
+  async function onSubmit(data: CreateProductSchema) {
+
+    let media: {
+      key: string;
+      type: "IMAGE" | "VIDEO";
+    }[] = [];
+
+    if (files.length > 0) {
+      media = await uploadFiles(files);
+    }
+
+    await createProduct.mutateAsync({
+      ...data,
+      media,
+    });
+  }
 
   return (
     <Card className="w-full sm:max-w-md">
@@ -158,7 +171,6 @@ async function onSubmit(data: CreateProductSchema) {
                       className="text-sm text-muted-foreground"
                     >
                       {file.name}a
-
                     </p>
                   ))}
                 </div>

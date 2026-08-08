@@ -27,7 +27,7 @@ model Product {
 model ProductMedia {
   id        String @id @default(cuid())
 
-  url       String
+  key       String
   type      MediaType
 
   productId String
