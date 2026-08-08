@@ -6,8 +6,8 @@ export default function ProductsLayout({
   children,
 }: ProductsLayoutProps) {
   return (
-    <main className="container mx-auto max-w-7xl py-10">
-      <div className="space-y-8">
+    <main className="min-h-screen bg-muted/30">
+      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {children}
       </div>
     </main>

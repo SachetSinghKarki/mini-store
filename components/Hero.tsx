@@ -24,6 +24,14 @@ export function Hero() {
             piece leaves room for the material to speak for itself.
           </p>
 
+          <div className="mt-6 inline-flex w-fit items-center gap-2 border border-foreground/20 px-4 py-2 text-xs text-muted-foreground">
+            <span className="tracking-wide">
+              Use code{" "}
+              <span className="font-medium text-foreground">MINIMAL25</span>{" "}
+              for 25% off
+            </span>
+          </div>
+
           <div className="mt-10 flex items-center gap-6">
             <Link
               href="/products"
