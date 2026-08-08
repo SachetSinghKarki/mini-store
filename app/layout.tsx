@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Navbar } from "@/components/Navbar";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <TRPCReactProvider>
           <Navbar />
           <main className="flex-1">
+            <NuqsAdapter>
+
             {children}
+            </NuqsAdapter>
           </main>
         </TRPCReactProvider>
       </body>

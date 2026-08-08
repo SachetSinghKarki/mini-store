@@ -55,23 +55,48 @@ export const productRouter = createTRPCRouter({
     };
   }),
 
-  list: publicProcedure.query(async ({ ctx }) => {
+ list: publicProcedure
+  .input(
+    z.object({
+      search: z.string().optional(),
+    }),
+  )
+  .query(async ({ ctx, input }) => {
     const products = await ctx.prisma.product.findMany({
-  include: {
-    media: true,
-  },
-});
+      where: input.search
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: input.search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                description: {
+                  contains: input.search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : undefined,
 
-return Promise.all(
-  products.map(async (product) => ({
-    ...product,
-    media: await Promise.all(
-      product.media.map(async (media) => ({
-        ...media,
-        url: await getFileUrl(media.key),
+      include: {
+        media: true,
+      },
+    });
+
+    return Promise.all(
+      products.map(async (product) => ({
+        ...product,
+        media: await Promise.all(
+          product.media.map(async (media) => ({
+            ...media,
+            url: await getFileUrl(media.key),
+          })),
+        ),
       })),
-    ),
-  })),
-);
+    );
   }),
 });

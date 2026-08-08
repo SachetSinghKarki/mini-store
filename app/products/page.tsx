@@ -1,20 +1,32 @@
-import { Loading } from "@/modules/products/components/Loading";
-import { ProductView } from "@/modules/products/components/product-view";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient, trpc } from "@/trpc/server";
-import { HydrationBoundary,dehydrate } from "@tanstack/react-query";
-import { Suspense } from "react";
 
-export default function ProductsPage() {
-  const queryClient = getQueryClient()
+import { ProductView } from "@/modules/products/components/product-view";
 
-  void queryClient.prefetchQuery(
-    trpc.products.list.queryOptions()
-  )
+type ProductsPageProps = {
+  searchParams: Promise<{
+    search?: string;
+  }>;
+};
+
+export default async function ProductsPage({
+  searchParams,
+}: ProductsPageProps) {
+  const params = await searchParams;
+
+  const search = params.search || undefined;
+
+  const queryClient = getQueryClient();
+
+  await queryClient.prefetchQuery(
+    trpc.products.list.queryOptions({
+      search,
+    }),
+  );
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-     <Suspense fallback={<Loading/>}>
-     <ProductView/>
-     </Suspense>
+      <ProductView search={search} />
     </HydrationBoundary>
   );
 }
