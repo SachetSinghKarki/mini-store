@@ -38,7 +38,7 @@ export function SuccessView() {
           {/* ACTIONS */}
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild>
+            <Button >
               <Link href="/products">
                 Continue Shopping
               </Link>

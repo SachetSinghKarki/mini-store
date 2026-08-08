@@ -182,7 +182,7 @@ export function ProductDetailView({
             </Button>
 
             <Button
-              asChild
+              
               variant="outline"
               className="h-12 w-full"
               size="lg"

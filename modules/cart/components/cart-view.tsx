@@ -134,7 +134,7 @@ export function CartView() {
           Your cart is currently empty.
         </p>
 
-        <Button asChild className="mt-6">
+        <Button  className="mt-6">
           <a href="/products">
             Continue Shopping
           </a>
